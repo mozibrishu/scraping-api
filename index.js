@@ -23,10 +23,13 @@ app.use(cors({
 const home = require('./routes/home');
 const live = require('./routes/live');
 const score = require('./routes/score');
+const summary = require('./routes/summary');
 
 app.use('/', home);
 app.use('/live', live);
 app.use('/score', score);
+app.use('/summary', summary);
+
 
 app.use('/', function(req, res) {
     res.status(404).json({

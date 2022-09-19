@@ -24,7 +24,9 @@ router.get('/', function (req, res) {
     res.header('X-Content-Type-Options', 'nosniff');
     res.header('Strict-Transport-Security', 'max-age=63072000');
     res.setHeader('Content-Type', 'application/json');
-    res.json('Live Cricket score API - v0.0.1');
+
+    // Home Response
+    res.json('Scraping API - v0.0.1');
 
 });
 
