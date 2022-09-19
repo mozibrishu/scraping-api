@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3002;
 
 var allowedOrigins = ['http://localhost:8080',
     'http://127.0.0.1:5500',

@@ -1,26 +1,28 @@
 const express = require('express');
 const router = express.Router();
 const cheerio = require('cheerio');
-const randomUseragent = require('random-useragent');
-const apicache = require("apicache");
+// const randomUseragent = require('random-useragent');
+// const apicache = require("apicache");
 const axios = require('axios');
-const { rateLimit } = require('express-rate-limit');
-const rua = randomUseragent.getRandom();
-const cache = apicache.middleware
+// const { rateLimit } = require('express-rate-limit');
+// const rua = randomUseragent.getRandom();
+// const cache = apicache.middleware
 const matchdata = require('../utlis/app.json');
 const { dummydata } = require('../utlis/error.js');
 const { errormsg } = require('../utlis/msg.js');
 
-const apiRequestLimiter = rateLimit({
-    windowMs: 1 * 60 * 1000,
-    max: 40,
-    handler: function (req, res) {
-        return res.status(429).json(
-          dummydata()
-        )
-    }
-})
-router.get('/', cache('5 seconds'), apiRequestLimiter, function(req, res) {
+// const apiRequestLimiter = rateLimit({
+//     windowMs: 1 * 60 * 1000,
+//     max: 40,
+//     handler: function (req, res) {
+//         return res.status(429).json(
+//           dummydata()
+//         )
+//     }
+// })
+// router.get('/', cache('5 seconds'), apiRequestLimiter, function(req, res) {
+router.get('/', function (req, res) {
+
     res.header('Access-Control-Allow-Headers', 'Access-Control-Allow-Headers,Content-Type,Access-Control-Allow-Methods, Authorization, X-Requested-With');
     res.header('Access-Control-Allow-Methods', 'GET');
     res.header('X-Frame-Options', 'DENY');
@@ -35,11 +37,8 @@ router.get('/', cache('5 seconds'), apiRequestLimiter, function(req, res) {
     let live_url = str.replace('www', 'm');
     axios({
         method: 'GET',
-        url: live_url,
-        headers: {
-            'User-Agent': rua,
-        }
-    }).then(function(response) {
+        url: live_url
+    }).then(function (response) {
 
         $ = cheerio.load(response.data);
 
@@ -64,7 +63,7 @@ router.get('/', cache('5 seconds'), apiRequestLimiter, function(req, res) {
         var bowlerruns = $('td[class="cbz-grid-table-fix "]').eq(23).text();
         var bowlerwickets = $('td[class="cbz-grid-table-fix "]').eq(24).text();
         var bowlermaiden = $('td[class="cbz-grid-table-fix "]').eq(22).text();
-        var bowlertwo =  $('span.bat-bowl-miniscore').eq(3).text();
+        var bowlertwo = $('span.bat-bowl-miniscore').eq(3).text();
         var bowletworover = $('td[class="cbz-grid-table-fix "]').eq(26).text();
         var bowlertworuns = $('td[class="cbz-grid-table-fix "]').eq(28).text();
         var bowlertwowickets = $('td[class="cbz-grid-table-fix "]').eq(29).text();
@@ -111,7 +110,7 @@ router.get('/', cache('5 seconds'), apiRequestLimiter, function(req, res) {
 
         res.send(JSON.stringify(livescore, null, 4));
 
-    }).catch(function(error) {
+    }).catch(function (error) {
         if (!error.response) {
             res.json(errormsg());
         } else {

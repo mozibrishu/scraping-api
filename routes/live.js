@@ -1,27 +1,29 @@
 const express = require('express');
 const router = express.Router();
 const cheerio = require('cheerio');
-const randomUseragent = require('random-useragent');
-const apicache = require("apicache");
+// const randomUseragent = require('random-useragent');
+// const apicache = require("apicache");
 const axios = require('axios');
-const { rateLimit } = require('express-rate-limit');
-const rua = randomUseragent.getRandom();
-const cache = apicache.middleware
+// const { rateLimit } = require('express-rate-limit');
+// const rua = randomUseragent.getRandom();
+// const cache = apicache.middleware
 const matchdata = require('../utlis/app.json');
 const { dummydata } = require('../utlis/error.js');
 const { errormsg } = require('../utlis/msg.js');
 
-const apiRequestLimiter = rateLimit({
-    windowMs: 1 * 60 * 1000,
-    max: 40,
-    handler: function (req, res) {
-        return res.status(429).json(
-          dummydata()
-        )
-    }
-})
+// const apiRequestLimiter = rateLimit({
+//     windowMs: 1 * 60 * 1000,
+//     max: 40,
+//     handler: function (req, res) {
+//         return res.status(429).json(
+//           dummydata()
+//         )
+//     }
+// })
 
-router.get('/', cache('2 minutes'), apiRequestLimiter, function(req, res) {
+// router.get('/', cache('2 minutes'), apiRequestLimiter, function(req, res) {
+router.get('/', function(req, res) {
+
     res.header('Access-Control-Allow-Headers', 'Access-Control-Allow-Headers,Content-Type,Access-Control-Allow-Methods, Authorization, X-Requested-With');
     res.header('Access-Control-Allow-Methods', 'GET');
     res.header('X-Frame-Options', 'DENY');
@@ -36,9 +38,9 @@ router.get('/', cache('2 minutes'), apiRequestLimiter, function(req, res) {
     axios({
         method: 'GET',
         url: live_url,
-        headers: {
-            'User-Agent': rua
-        }
+        // headers: {
+        //     'User-Agent': rua
+        // }
     }).then(function(response) {
 
         $ = cheerio.load(response.data);

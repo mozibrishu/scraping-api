@@ -1,20 +1,21 @@
 const express = require('express');
 const router = express.Router();
-const { rateLimit } = require('express-rate-limit');
-const apicache = require("apicache");
-const cache = apicache.middleware
+// const { rateLimit } = require('express-rate-limit');
+// const apicache = require("apicache");
+// const cache = apicache.middleware
 
-const apiRequestLimiter = rateLimit({
-    windowMs: 1 * 60 * 1000,
-    max: 40,
-    handler: function (req, res) {
-        return res.status(429).json(
-          dummydata()
-        )
-    }
-})
+// const apiRequestLimiter = rateLimit({
+//     windowMs: 1 * 60 * 1000,
+//     max: 40,
+//     handler: function (req, res) {
+//         return res.status(429).json(
+//           dummydata()
+//         )
+//     }
+// })
 
-router.get('/', cache('1 hour'), apiRequestLimiter, function(req, res) {
+// router.get('/', cache('1 hour'), apiRequestLimiter, function(req, res) {
+router.get('/', function (req, res) {
 
     res.header('Access-Control-Allow-Headers', 'Access-Control-Allow-Headers,Content-Type,Access-Control-Allow-Methods, Authorization, X-Requested-With');
     res.header('Access-Control-Allow-Methods', 'GET');
