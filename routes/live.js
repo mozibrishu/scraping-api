@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const cheerio = require('cheerio');
-// const randomUseragent = require('random-useragent');
+const randomUseragent = require('random-useragent');
 // const apicache = require("apicache");
 const axios = require('axios');
 // const { rateLimit } = require('express-rate-limit');
-// const rua = randomUseragent.getRandom();
+const rua = randomUseragent.getRandom();
 // const cache = apicache.middleware
 const matchdata = require('../utlis/app.json');
 const { dummydata } = require('../utlis/error.js');
@@ -38,9 +38,9 @@ router.get('/', function(req, res) {
     axios({
         method: 'GET',
         url: live_url,
-        // headers: {
-        //     'User-Agent': rua
-        // }
+        headers: {
+            'User-Agent': rua
+        }
     }).then(function(response) {
 
         $ = cheerio.load(response.data);

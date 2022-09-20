@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
+const randomUseragent = require('random-useragent');
 const cheerio = require('cheerio');
+const rua = randomUseragent.getRandom();
 const axios = require('axios');
 const matchdata = require('../utlis/app.json');
 const { dummydata } = require('../utlis/error.js');
@@ -20,10 +22,14 @@ router.get('/', function (req, res) {
     const match_url = req.query.url;
 
     let str = match_url || '';
-    let live_url = str.replace('www', 'm');
+    // let live_url = str.replace('www', 'm');
+    live_url = str;
     axios({
         method: 'GET',
-        url: live_url
+        url: live_url,
+        headers: {
+            'User-Agent': rua
+        }
     }).then(function (response) {
 
         $ = cheerio.load(response.data);
