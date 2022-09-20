@@ -7,9 +7,31 @@ const axios = require('axios');
 const matchdata = require('../utlis/app.json');
 const { dummydata } = require('../utlis/error.js');
 const { errormsg } = require('../utlis/msg.js');
+const bodyParser = require("body-parser")
+const fs = require('fs');
+router.use(bodyParser.json())
+router.use(bodyParser.urlencoded({ extended: true }));
 
+// https://www.sportsadda.com/cricket/scores-fixtures/scorecard/tanzania-vs-malawi-live-scores-t20-match-tzmwi09202022216732
+// const dataPath = './utlis/realTimeScore.json' // path to our JSON file
+const dataPath = './utlis/result.txt'
 
-router.get('/', function (req, res) {
+// util functions
+const saveAccountData = (data) => {
+    const stringifyData = JSON.stringify(data)
+    fs.writeFileSync(dataPath, stringifyData, function (err) {
+        if (err) {
+            return console.log(err);
+        }
+        console.log("The file was saved!");
+    })
+}
+const getAccountData = () => {
+    const jsonData = fs.readFileSync(dataPath)
+    return JSON.parse(jsonData)
+}
+
+router.get('/', async function (req, res) {
 
     res.header('Access-Control-Allow-Headers', 'Access-Control-Allow-Headers,Content-Type,Access-Control-Allow-Methods, Authorization, X-Requested-With');
     res.header('Access-Control-Allow-Methods', 'GET');
@@ -30,23 +52,36 @@ router.get('/', function (req, res) {
         headers: {
             'User-Agent': rua
         }
-    }).then(function (response) {
+    }).then(async function (response) {
 
         $ = cheerio.load(response.data);
 
         var team1_name = $("div.team.team-a > div.team-info > span").text();
         var team1_score = $("div.team.team-a > div.team-score > div > span.score").text();
+        var team1_overAndrr = $("div.team.team-a > div.team-score > div > span.si-overs").text();
+        var team1_over = team1_overAndrr.substr(0, team1_overAndrr.indexOf(")") + 1);
+
+        
 
         var team2_name = $("div.team.team-b > div.team-info > span").text();
         var team2_score = $(" div.team.team-b > div.team-score.won > div > span.score").text();
+        var team2_over_rr = $("div.team.team-b > div.team-score.won > div > span.si-overs").text();
 
-        if(team2_score){
+
+        if (team2_score) {
             var temp2 = team2_name;
             team2_name = team1_name;
             team1_name = temp2;
             var temp = team2_score;
             team2_score = team1_score;
             team1_score = temp;
+
+            var temp3 = team2_over_rr;
+            team2_over_rr = team1_over;
+            team1_over = temp3;
+        }else{
+            team2_score = '-';
+            team2_over_rr = '-';
         }
 
 
@@ -85,9 +120,10 @@ router.get('/', function (req, res) {
         var livescore = ({
             team1_name: team1_name || "Data Not Found",
             team1_score: team1_score || "Data Not Found",
+            team1_over: team1_over || "Data Not Found",
             team2_name: team2_name || "Data Not Found",
             team2_score: team2_score || "Data Not Found",
-
+            team2_over_rr: team2_over_rr || "Data Not Found",
             // title: title || "Data Not Found",
             // update: update || "Data Not Found",
             // current: currentscore || "Data Not Found",
@@ -120,10 +156,15 @@ router.get('/', function (req, res) {
             // runrate: runrate || "Data Not Found",
             // commentary: commentary || "Data Not Found"
         });
-
+        if(team1_name !== 'Data Not Found'){
+            saveAccountData(livescore);
+        }
         res.send(JSON.stringify(livescore, null, 4));
 
+
+
     }).catch(function (error) {
+        console.log(error);
         if (!error.response) {
             res.json(errormsg());
         } else {
